@@ -5,7 +5,6 @@ defmodule Timber.PhoenixTest do
 
   import ExUnit.CaptureLog
 
-
   require Logger
 
   setup do
