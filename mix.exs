@@ -107,7 +107,7 @@ defmodule Timber.Phoenix.MixProject do
       {:jason, "~> 1.1"},
       {:phoenix, "~> 1.2"},
       {:plug, "~> 1.1"},
-      {:timber, "~> 3.0.0-alpha.1"},
+      {:timber, "~> 3.0.0-alpha.3"},
 
       #
       # Tooling
