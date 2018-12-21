@@ -6,6 +6,6 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [1.0.0] - 2018-12-21
+## 1.0.0 - 2018-12-21
 
 [Unreleased]: https://github.com/timberio/timber-elixir-phoenix/compare/v1.0.0...HEAD
