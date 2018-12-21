@@ -1,7 +1,7 @@
 defmodule Timber.Phoenix.MixProject do
   use Mix.Project
 
-  @version "1.0.0-alpha.1"
+  @version "1.0.0"
   @source_url "https://github.com/timberio/timber-elixir-phoenix"
   @homepage_url "https://github.com/timberio/timber-elixir-phoenix"
   @project_description """
@@ -108,7 +108,7 @@ defmodule Timber.Phoenix.MixProject do
       {:jason, "~> 1.1"},
       {:phoenix, "~> 1.2"},
       {:plug, "~> 1.1"},
-      {:timber, "~> 3.0.0-alpha.3"},
+      {:timber, "~> 3.0"},
 
       #
       # Tooling
