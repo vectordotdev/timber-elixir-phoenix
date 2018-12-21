@@ -6,8 +6,6 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Added
+## [1.0.0] - 2018-12-21
 
-  - Migrated the Timber integration for Phoenix from the main Timber library
-
-[Unreleased]: https://github.com/timberio/timber-elixir-phoenix/compare/master...HEAD
+[Unreleased]: https://github.com/timberio/timber-elixir-phoenix/compare/v1.0.0...HEAD
