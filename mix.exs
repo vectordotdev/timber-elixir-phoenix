@@ -114,7 +114,7 @@ defmodule Timber.Phoenix.MixProject do
       # Tooling
       #
 
-      {:credo, "~> 0.10", only: [:dev, :test]},
+      {:credo, "~> 1.0", only: [:dev, :test]},
       {:dialyxir, "~> 0.5", only: [:dev, :test]},
       {:earmark, "~> 1.2", only: [:dev]},
       {:ex_doc, "~> 0.19.0", only: [:dev]},
