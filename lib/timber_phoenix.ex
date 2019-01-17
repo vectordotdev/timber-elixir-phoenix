@@ -139,7 +139,7 @@ defmodule Timber.Phoenix do
   The `controller` should be the qualified name of the Phoenix controller's
   Elixir module (e.g., `TimberClientAPI.OrganizationController`).
 
-  The `action` should be the name of the action (e.g., `index`).
+  The `action` should be the name of the action (e.g., `:index`).
   """
   @spec add_controller_action_to_blacklist(controller, action) :: :ok
   def add_controller_action_to_blacklist(controller, action) do
@@ -147,6 +147,33 @@ defmodule Timber.Phoenix do
     blacklist = get_parsed_blacklist()
     new_blacklist = MapSet.put(blacklist, controller_action)
     put_parsed_blacklist(new_blacklist)
+  end
+
+  @doc """
+  Blacklists an entire controller
+
+  This function will update the blacklist of controller actions, following the
+  same conventions as the blacklist described in the application configuration.
+
+  The `controller` should be the qualified name of the Phoenix controller's
+  Elixir module (e.g., `TimberClientAPI.OrganizationController`).
+  """
+  @spec add_controller_to_blacklist(controller) :: :ok
+  def add_controller_to_blacklist(controller) do
+    add_controller_action_to_blacklist(controller, nil)
+  end
+
+  @doc """
+  Blacklists an action regardless of the controller
+
+  This function will update the blacklist of controller actions, following the
+  same conventions as the blacklist described in the application configuration.
+
+  The `action` should be the name of the action (e.g., `:index`).
+  """
+  @spec add_action_to_blacklist(controller) :: :ok
+  def add_action_to_blacklist(action) do
+    add_controller_action_to_blacklist(nil, action)
   end
 
   @doc """
@@ -158,7 +185,7 @@ defmodule Timber.Phoenix do
   The `controller` should be the qualified name of the Phoenix controller's
   Elixir module (e.g., `TimberClientAPI.OrganizationController`).
 
-  The `action` should be the name of the action (e.g., `index`).
+  The `action` should be the name of the action (e.g., `:index`).
   """
   @spec remove_controller_action_from_blacklist(controller, action) :: :ok
   def remove_controller_action_from_blacklist(controller, action) do
@@ -168,10 +195,38 @@ defmodule Timber.Phoenix do
     put_parsed_blacklist(new_blacklist)
   end
 
+  @doc """
+  Removes a blacklisted controller from the blacklist
+
+  This function will update the blacklist of controller actions, following the
+  same conventions as the blacklist described in the application configuration.
+
+  The `controller` should be the qualified name of the Phoenix controller's
+  Elixir module (e.g., `TimberClientAPI.OrganizationController`).
+  """
+  @spec remove_controller_from_blacklist(controller) :: :ok
+  def remove_controller_from_blacklist(controller) do
+    remove_controller_action_from_blacklist(controller, nil)
+  end
+
+  @doc """
+  Removes a blacklisted action from the blacklist
+
+  This function will update the blacklist of controller actions, following the
+  same conventions as the blacklist described in the application configuration.
+
+  The `action` should be the name of the action (e.g., `:index`).
+  """
+  @spec remove_action_from_blacklist(action) :: :ok
+  def remove_action_from_blacklist(action) do
+    remove_controller_action_from_blacklist(nil, action)
+  end
+
   @doc false
   @spec controller_action_blacklisted?({controller, action}, parsed_blacklist) :: boolean
-  def controller_action_blacklisted?(controller_action, blacklist) do
-    MapSet.member?(blacklist, controller_action)
+  def controller_action_blacklisted?({controller, action}, blacklist) do
+    MapSet.member?(blacklist, {controller, action}) ||
+      MapSet.member?(blacklist, {controller, nil}) || MapSet.member?(blacklist, {nil, action})
   end
 
   @doc false
@@ -387,7 +442,7 @@ defmodule Timber.Phoenix do
     # milliseconds
     time_ms =
       time_diff
-      |> System.convert_time_unit(:native, :milliseconds)
+      |> System.convert_time_unit(:native, :millisecond)
       |> :erlang.float()
 
     event = %TemplateRenderEvent{
