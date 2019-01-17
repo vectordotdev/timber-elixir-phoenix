@@ -67,6 +67,50 @@ defmodule Timber.PhoenixTest do
     end
   end
 
+  describe "Timber.Integrations.Timber.Phoenix.add_controller_to_blacklist/2" do
+    test "adds controller to the blacklist" do
+      Timber.Phoenix.put_parsed_blacklist(
+        MapSet.new([
+          {A, :action},
+          {B, :action}
+        ])
+      )
+
+      Timber.Phoenix.add_controller_to_blacklist(Controller)
+      blacklist = Timber.Phoenix.get_parsed_blacklist()
+
+      assert Timber.Phoenix.controller_action_blacklisted?({A, :action}, blacklist)
+      assert Timber.Phoenix.controller_action_blacklisted?({B, :action}, blacklist)
+
+      assert Timber.Phoenix.controller_action_blacklisted?(
+               {Controller, :action},
+               blacklist
+             )
+    end
+  end
+
+  describe "Timber.Integrations.Timber.Phoenix.add_action_to_blacklist/2" do
+    test "adds action to the blacklist" do
+      Timber.Phoenix.put_parsed_blacklist(
+        MapSet.new([
+          {A, :action},
+          {B, :action}
+        ])
+      )
+
+      Timber.Phoenix.add_action_to_blacklist(:action)
+      blacklist = Timber.Phoenix.get_parsed_blacklist()
+
+      assert Timber.Phoenix.controller_action_blacklisted?({A, :action}, blacklist)
+      assert Timber.Phoenix.controller_action_blacklisted?({B, :action}, blacklist)
+
+      assert Timber.Phoenix.controller_action_blacklisted?(
+               {Controller, :action},
+               blacklist
+             )
+    end
+  end
+
   describe "Timber.Integrations.Timber.Phoenix.remove_controller_action_from_blacklist/2" do
     test "removes controller action from blacklist" do
       Timber.Phoenix.put_parsed_blacklist(
@@ -77,6 +121,42 @@ defmodule Timber.PhoenixTest do
       )
 
       Timber.Phoenix.remove_controller_action_from_blacklist(B, :action)
+
+      blacklist = Timber.Phoenix.get_parsed_blacklist()
+
+      assert Timber.Phoenix.controller_action_blacklisted?({A, :action}, blacklist)
+      refute Timber.Phoenix.controller_action_blacklisted?({B, :action}, blacklist)
+    end
+  end
+
+  describe "Timber.Integrations.Timber.Phoenix.remove_controller_from_blacklist/2" do
+    test "removes controller from blacklist" do
+      Timber.Phoenix.put_parsed_blacklist(
+        MapSet.new([
+          {A, :action},
+          {B, nil}
+        ])
+      )
+
+      Timber.Phoenix.remove_controller_from_blacklist(B)
+
+      blacklist = Timber.Phoenix.get_parsed_blacklist()
+
+      assert Timber.Phoenix.controller_action_blacklisted?({A, :action}, blacklist)
+      refute Timber.Phoenix.controller_action_blacklisted?({B, :action}, blacklist)
+    end
+  end
+
+  describe "Timber.Integrations.Timber.Phoenix.remove_action_from_blacklist/2" do
+    test "removes action from blacklist" do
+      Timber.Phoenix.put_parsed_blacklist(
+        MapSet.new([
+          {A, :action},
+          {nil, :action}
+        ])
+      )
+
+      Timber.Phoenix.remove_action_from_blacklist(:action)
 
       blacklist = Timber.Phoenix.get_parsed_blacklist()
 
