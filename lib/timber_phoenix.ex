@@ -387,7 +387,7 @@ defmodule Timber.Phoenix do
     # milliseconds
     time_ms =
       time_diff
-      |> System.convert_time_unit(:native, :milliseconds)
+      |> System.convert_time_unit(:native, :millisecond)
       |> :erlang.float()
 
     event = %TemplateRenderEvent{
