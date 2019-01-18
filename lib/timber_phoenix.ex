@@ -75,20 +75,23 @@ defmodule Timber.Phoenix do
   provides a health controller for external applications, you may want to stop
   instrumentation on that controller's actions to reduce noise.
 
-  The `:controller_actions_blacklist` configuration key can be used to control which
+  The `:parsed_controller_actions_blacklist` configuration key can be used to control which
   controller actions to suppress instrumentation for. It takes a list of two-element
   tuples. The first element is the controller name, and the second element is the
   action.
 
+  If you would like to blacklist a specific controller or action, nil can be used as a
+  wildcard.
 
-  As an example, here's how we would prevent instrumentation of the `check` action in
-  `TimberClientAPI.HealthController`:
+  As an example, here's how we would prevent instrumentation of the `:check` action in
+  `TimberClientAPI.HealthController` and every action in the PostController:
 
   ```elixir
   config :timber_phoenix, Timber.Phoenix,
-    controller_actions_blacklist: [
+    parsed_controller_actions_blacklist: MapSet.new([
       {TimberClientAPI.HealthController, :check}
-    ]
+      {TimberClientAPI.PostController, nil}
+    ])
   ```
 
   Now, when Phoenix calls `check/2` on the `TimberClientAPI.HealthController` module,
@@ -111,7 +114,6 @@ defmodule Timber.Phoenix do
   @typep controller :: module
   @typep action :: atom
   @typep controller_action :: {controller, action}
-  @typep unparsed_blacklist :: [controller_action]
   @typep parsed_blacklist :: MapSet.t(controller_action)
 
   @doc """
@@ -244,24 +246,6 @@ defmodule Timber.Phoenix do
   @spec put_parsed_blacklist(parsed_blacklist) :: :ok
   def put_parsed_blacklist(parsed_blacklist) do
     Application.put_env(:timber_phoenix, :parsed_controller_actions_blacklist, parsed_blacklist)
-  end
-
-  @doc false
-  @spec get_unparsed_blacklist() :: unparsed_blacklist
-  # The controller actions blacklist is stored in the application environment at
-  # [:timber, Timber.Integrations.PhoenixInstrumenter, :controller_actions_blacklist].
-  #
-  # This function fetches that list, returning an empty list if the environment entry
-  # does not exist.
-  def get_unparsed_blacklist() do
-    Application.get_env(:timber_phoenix, :controller_actions_blacklist, [])
-  end
-
-  @doc false
-  @spec parse_blacklist(unparsed_blacklist) :: parsed_blacklist
-  # Parses a controller action blacklist into a MapSet
-  def parse_blacklist(blacklist) do
-    MapSet.new(blacklist)
   end
 
   #

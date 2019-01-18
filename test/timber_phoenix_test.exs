@@ -17,34 +17,6 @@ defmodule Timber.PhoenixTest do
     :ok
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.get_unparsed_blacklist/0" do
-    test "fetches the unparsed blacklist from the Application environment" do
-      blacklist = [
-        {A, :action},
-        {B, :action}
-      ]
-
-      Application.put_env(:timber_phoenix, :controller_actions_blacklist, blacklist)
-
-      assert [{A, :action}, {B, :action}] = Timber.Phoenix.get_unparsed_blacklist()
-    end
-  end
-
-  describe "Timber.Integrations.Timber.Phoenix.parse_blacklist/1" do
-    test "parses blacklist" do
-      unparsed_blacklist = [
-        {A, :action},
-        {B, :action}
-      ]
-
-      parsed_blacklist = Timber.Phoenix.parse_blacklist(unparsed_blacklist)
-
-      assert MapSet.member?(parsed_blacklist, {A, :action})
-      assert MapSet.member?(parsed_blacklist, {B, :action})
-      refute MapSet.member?(parsed_blacklist, {Controller, :action})
-    end
-  end
-
   describe "Timber.Integrations.Timber.Phoenix.add_controller_action_to_blacklist/2" do
     test "adds controller action to the blacklist" do
       Timber.Phoenix.put_parsed_blacklist(
