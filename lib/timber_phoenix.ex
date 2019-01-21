@@ -100,12 +100,6 @@ defmodule Timber.Phoenix do
 
   require Logger
 
-  alias Timber.Event
-  alias Timber.Events.ChannelJoinEvent
-  alias Timber.Events.ChannelReceiveEvent
-  alias Timber.Events.ControllerCallEvent
-  alias Timber.Events.TemplateRenderEvent
-
   @default_log_level :info
 
   @typep controller :: module
@@ -276,76 +270,69 @@ defmodule Timber.Phoenix do
           result_of_before_callback :: :ok
         ) :: :ok
   def phoenix_channel_join(:start, _compile, %{socket: socket, params: params}) do
-    # Any value using try_atom_to_string handles nil values since they are not always present.
+    # Any value using to_string handles nil values since they are not always present.
     log_level = get_log_level()
-    channel = try_atom_to_string(socket.channel)
-    topic = socket.topic
-    transport = try_atom_to_string(socket.transport)
-    serializer = try_atom_to_string(socket.serializer)
+    channel = to_string(socket.channel)
+    topic = to_string(socket.topic)
+    transport = to_string(socket.transport)
+    serializer = to_string(socket.serializer)
     protocol_version = if Map.has_key?(socket, :vsn), do: socket.vsn, else: nil
     filtered_params = filter_params(params)
 
-    metadata = %{
-      transport: transport,
-      serializer: serializer,
-      protocol_version: protocol_version,
-      params: filtered_params
-    }
-
-    metadata_json =
-      case Jason.encode_to_iodata(metadata) do
-        {:ok, json} -> IO.iodata_to_binary(json)
+    params_json =
+      case Jason.encode(filtered_params) do
+        {:ok, json} -> json
         {:error, _error} -> nil
       end
 
-    event =
-      ChannelJoinEvent.new(
+    event = %{
+      channel_joined: %{
         channel: channel,
+        params_json: params_json,
+        protocol_version: protocol_version,
+        serializer: serializer,
         topic: topic,
-        metadata_json: metadata_json
-      )
+        transport: transport
+      }
+    }
 
-    message = ChannelJoinEvent.message(event)
-    metadata = Event.to_metadata(event)
+    message = ["Joined channel ", channel, " with \"", topic, "\""]
 
-    Logger.log(log_level, message, metadata)
+    Logger.log(log_level, message, event: event)
   end
 
   def phoenix_channel_join(:stop, _compile, :ok),
     do: :ok
 
   def phoenix_channel_receive(:start, _compile, meta) do
-    %{socket: socket, params: params, event: event} = meta
+    %{socket: socket, params: params, event: event_name} = meta
 
     log_level = get_log_level()
-    channel = try_atom_to_string(socket.channel)
-    topic = socket.topic
-    transport = try_atom_to_string(socket.transport)
+    channel = to_string(socket.channel)
+    event_name = to_string(event_name)
+    topic = to_string(socket.topic)
+    transport = to_string(socket.transport)
     filtered_params = filter_params(params)
 
-    metadata = %{
-      transport: transport,
-      params: filtered_params
-    }
-
-    metadata_json =
-      case Jason.encode_to_iodata(metadata) do
-        {:ok, json} -> IO.iodata_to_binary(json)
+    params_json =
+      case Jason.encode(filtered_params) do
+        {:ok, json} -> json
         {:error, _error} -> nil
       end
 
-    event =
-      ChannelReceiveEvent.new(
+    event = %{
+      channel_event_received: %{
         channel: channel,
+        name: event_name,
+        params_json: params_json,
         topic: topic,
-        event: event,
-        metadata_json: metadata_json
-      )
+        transport: transport
+      }
+    }
 
-    message = ChannelReceiveEvent.message(event)
-    metadata = Event.to_metadata(event)
+    message = ["Received ", event, " on \"", topic, "\" to ", channel]
 
-    Logger.log(log_level, message, metadata)
+    Logger.log(log_level, message, event: event)
   end
 
   def phoenix_channel_receive(:stop, _compile, :ok),
@@ -366,28 +353,42 @@ defmodule Timber.Phoenix do
     controller_actions_blacklist = get_parsed_blacklist()
 
     controller = Phoenix.Controller.controller_module(conn)
-    action = Phoenix.Controller.action_name(conn)
+    action = Phoenix.Controller.action(conn)
 
     if !controller_action_blacklisted?({controller, action}, controller_actions_blacklist) do
       "Elixir." <> controller_name = to_string(controller)
       action_name = to_string(action)
       log_level = get_log_level()
-      # Phoenix actions are always 2 arity function
-      params = filter_params(conn.params)
-      pipelines = conn.private[:phoenix_pipelines]
+      pipelines = inspect(conn.private[:phoenix_pipelines])
+      filtered_params = filter_params(conn.params)
 
-      event =
-        ControllerCallEvent.new(
+      params_json =
+        case Jason.encode(filtered_params) do
+          {:ok, json} -> json
+          {:error, _error} -> nil
+        end
+
+      event = %{
+        controller_called: %{
           action: action_name,
           controller: controller_name,
-          params: params,
+          params_json: params_json,
           pipelines: pipelines
-        )
+        }
+      }
 
-      message = ControllerCallEvent.message(event)
-      metadata = Event.to_metadata(event)
+      message = [
+        "Processing with ",
+        controller_name,
+        ?.,
+        action_name,
+        ?/,
+        ?2,
+        " Pipelines: ",
+        pipelines
+      ]
 
-      Logger.log(log_level, message, metadata)
+      Logger.log(log_level, message, event: event)
     end
 
     :ok
@@ -440,20 +441,21 @@ defmodule Timber.Phoenix do
   def phoenix_controller_render(:stop, time_diff, {:ok, log_level, template_name}) do
     # This comes in as native time but is expected to be a float representing
     # milliseconds
-    time_ms =
+    duration_ms =
       time_diff
       |> System.convert_time_unit(:native, :millisecond)
       |> :erlang.float()
 
-    event = %TemplateRenderEvent{
-      name: template_name,
-      time_ms: time_ms
+    event = %{
+      template_rendered: %{
+        name: template_name,
+        duration_ms: duration_ms
+      }
     }
 
-    message = TemplateRenderEvent.message(event)
-    metadata = Event.to_metadata(event)
+    message = ["Rendered ", ?", template_name, ?", " in ", Float.to_string(duration_ms), "ms"]
 
-    Logger.log(log_level, message, metadata)
+    Logger.log(log_level, message, event: event)
 
     :ok
   end
@@ -520,13 +522,5 @@ defmodule Timber.Phoenix do
     else
       params
     end
-  end
-
-  defp try_atom_to_string(atom) when is_atom(atom) do
-    Atom.to_string(atom)
-  end
-
-  defp try_atom_to_string(_atom) do
-    nil
   end
 end

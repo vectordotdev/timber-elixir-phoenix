@@ -289,7 +289,7 @@ defmodule Timber.PhoenixTest do
       log =
         capture_log(fn ->
           socket = %Phoenix.Socket{channel: :channel, topic: "topic"}
-          params = 3.14
+          params = %{"key" => "val"}
 
           metadata = %{
             socket: socket,
