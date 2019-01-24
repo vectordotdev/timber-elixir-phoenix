@@ -17,7 +17,7 @@ defmodule Timber.PhoenixTest do
     :ok
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.add_controller_action_to_blacklist/2" do
+  describe "Timber.Phoenix.add_controller_action_to_blacklist/2" do
     test "adds controller action to the blacklist" do
       Timber.Phoenix.put_parsed_blacklist(
         MapSet.new([
@@ -39,7 +39,7 @@ defmodule Timber.PhoenixTest do
     end
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.add_controller_to_blacklist/2" do
+  describe "Timber.Phoenix.add_controller_to_blacklist/2" do
     test "adds controller to the blacklist" do
       Timber.Phoenix.put_parsed_blacklist(
         MapSet.new([
@@ -61,7 +61,7 @@ defmodule Timber.PhoenixTest do
     end
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.add_action_to_blacklist/2" do
+  describe "Timber.Phoenix.add_action_to_blacklist/2" do
     test "adds action to the blacklist" do
       Timber.Phoenix.put_parsed_blacklist(
         MapSet.new([
@@ -83,7 +83,7 @@ defmodule Timber.PhoenixTest do
     end
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.remove_controller_action_from_blacklist/2" do
+  describe "Timber.Phoenix.remove_controller_action_from_blacklist/2" do
     test "removes controller action from blacklist" do
       Timber.Phoenix.put_parsed_blacklist(
         MapSet.new([
@@ -101,7 +101,7 @@ defmodule Timber.PhoenixTest do
     end
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.remove_controller_from_blacklist/2" do
+  describe "Timber.Phoenix.remove_controller_from_blacklist/2" do
     test "removes controller from blacklist" do
       Timber.Phoenix.put_parsed_blacklist(
         MapSet.new([
@@ -119,7 +119,7 @@ defmodule Timber.PhoenixTest do
     end
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.remove_action_from_blacklist/2" do
+  describe "Timber.Phoenix.remove_action_from_blacklist/2" do
     test "removes action from blacklist" do
       Timber.Phoenix.put_parsed_blacklist(
         MapSet.new([
@@ -137,7 +137,7 @@ defmodule Timber.PhoenixTest do
     end
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.get_parsed_blacklist/0" do
+  describe "Timber.Phoenix.get_parsed_blacklist/0" do
     test "retrieves empty MapSet when blacklist is not in application environment" do
       :ok = Application.delete_env(:timber_phoenix, :parsed_controller_actions_blacklist)
       blacklist = Timber.Phoenix.get_parsed_blacklist()
@@ -157,7 +157,7 @@ defmodule Timber.PhoenixTest do
     end
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.put_parsed_blacklist/1" do
+  describe "Timber.Phoenix.put_parsed_blacklist/1" do
     test "puts the blacklist in the application environment" do
       blacklist =
         MapSet.new([
@@ -171,7 +171,7 @@ defmodule Timber.PhoenixTest do
     end
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.phoenix_channel_join/3" do
+  describe "Timber.Phoenix.phoenix_channel_join/3" do
     test "logs phoenix_channel_join as configured by the channel" do
       log =
         capture_log(fn ->
@@ -187,7 +187,7 @@ defmodule Timber.PhoenixTest do
     end
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.phoenix_channel_receive/3" do
+  describe "Timber.Phoenix.phoenix_channel_receive/3" do
     test "logs phoenix_channel_receive as configured by the channel" do
       log =
         capture_log(fn ->
@@ -276,7 +276,7 @@ defmodule Timber.PhoenixTest do
     end
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.phoenix_controller_call/3" do
+  describe "Timber.Phoenix.phoenix_controller_call/3" do
     test "logs phoenix controller calls" do
       controller = Controller
       action = :action
@@ -314,7 +314,7 @@ defmodule Timber.PhoenixTest do
     end
   end
 
-  describe "Timber.Integrations.Timber.Phoenix.phoenix_controller_render/3" do
+  describe "Timber.Phoenix.phoenix_controller_render/3" do
     test ":start returns the log level and template name by default" do
       controller = Controller
       action = :action
