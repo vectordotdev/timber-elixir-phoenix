@@ -1,7 +1,7 @@
 defmodule Timber.Phoenix.MixProject do
   use Mix.Project
 
-  @version "1.0.0"
+  @version "1.0.1"
   @source_url "https://github.com/timberio/timber-elixir-phoenix"
   @homepage_url "https://github.com/timberio/timber-elixir-phoenix"
   @project_description """
