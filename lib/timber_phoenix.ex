@@ -87,7 +87,7 @@ defmodule Timber.Phoenix do
   `TimberClientAPI.HealthController` and every action in the PostController:
 
   ```elixir
-  config :timber_phoenix, Timber.Phoenix,
+  config :timber_phoenix,
     parsed_controller_actions_blacklist: MapSet.new([
       {TimberClientAPI.HealthController, :check}
       {TimberClientAPI.PostController, nil}
