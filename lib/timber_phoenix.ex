@@ -330,7 +330,7 @@ defmodule Timber.Phoenix do
       }
     }
 
-    message = ["Received ", event, " on \"", topic, "\" to ", channel]
+    message = ["Received ", event_name, " on \"", topic, "\" to ", channel]
 
     Logger.log(log_level, message, event: event)
   end
