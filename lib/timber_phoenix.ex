@@ -337,7 +337,7 @@ defmodule Timber.Phoenix do
     controller_actions_blacklist = get_parsed_blacklist()
 
     controller = Phoenix.Controller.controller_module(conn)
-    action = Phoenix.Controller.action(conn)
+    action = Phoenix.Controller.action_name(conn)
 
     if !controller_action_blacklisted?({controller, action}, controller_actions_blacklist) do
       "Elixir." <> controller_name = to_string(controller)
