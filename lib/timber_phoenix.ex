@@ -101,6 +101,8 @@ defmodule Timber.Phoenix do
   render events even if the controller is blacklisted.
   """
 
+  alias Timber.JSON
+
   require Logger
 
   @default_log_level :info
@@ -262,12 +264,7 @@ defmodule Timber.Phoenix do
     serializer = to_string(socket.serializer)
     protocol_version = if Map.has_key?(socket, :vsn), do: socket.vsn, else: nil
     filtered_params = filter_params(params)
-
-    params_json =
-      case Jason.encode(filtered_params) do
-        {:ok, json} -> json
-        {:error, _error} -> nil
-      end
+    params_json = JSON.try_encode_to_binary(filtered_params)
 
     event = %{
       channel_joined: %{
@@ -297,12 +294,7 @@ defmodule Timber.Phoenix do
     topic = to_string(socket.topic)
     transport = to_string(socket.transport)
     filtered_params = filter_params(params)
-
-    params_json =
-      case Jason.encode(filtered_params) do
-        {:ok, json} -> json
-        {:error, _error} -> nil
-      end
+    params_json = JSON.try_encode_to_binary(filtered_params)
 
     event = %{
       channel_event_received: %{
@@ -345,12 +337,7 @@ defmodule Timber.Phoenix do
       log_level = get_log_level()
       pipelines = inspect(conn.private[:phoenix_pipelines])
       filtered_params = filter_params(conn.params)
-
-      params_json =
-        case Jason.encode(filtered_params) do
-          {:ok, json} -> json
-          {:error, _error} -> nil
-        end
+      params_json = JSON.try_encode_to_binary(filtered_params)
 
       event = %{
         controller_called: %{

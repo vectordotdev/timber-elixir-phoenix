@@ -105,7 +105,6 @@ defmodule Timber.Phoenix.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:jason, "~> 1.1"},
       {:phoenix, "~> 1.2"},
       {:plug, "~> 1.1"},
       {:timber, "~> 3.0"},
