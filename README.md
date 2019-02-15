@@ -9,31 +9,31 @@ The Timber Phoenix library provides enhanced logging for your Phoenix-based appl
 
 ## Installation
 
-Ensure that you have both `:timber` (version 3.0.0 or later) and `:timber_phoenix` listed
+1. Ensure that you have both `:timber` (version 3.0.0 or later) and `:timber_phoenix` listed
 as dependencies in `mix.exs`:
 
-```elixir
-def deps do
-  [
-    {:timber, "~> 3.0"},
-    {:timber_phoenix, "~> 1.0"}
-  ]
-end
-```
+    ```elixir
+    def deps do
+      [
+        {:timber, "~> 3.0"},
+        {:timber_phoenix, "~> 1.0"}
+      ]
+    end
+    ```
 
-Then run `mix deps.get`.
+2. Run `mix deps.get` to get the dependencies.
 
-You'll need to add a configuration line for every Phoenix endpoint. For example,
+3. You'll need to add a configuration line for every Phoenix endpoint. For example,
 if you have the application `:my_app` and the Phoenix endpoint `MyApp.Endpoint`,
 the configuration in `config/config.exs` would look like this:
 
-```elixir
-use Mix.Config
+    ```elixir
+    use Mix.Config
 
-config :my_app, MyApp.Endpoint,
-  # ...,
-  instrumenters: [Timber.Phoenix],
-```
+    config :my_app, MyApp.Endpoint,
+      # ...,
+      instrumenters: [Timber.Phoenix],
+    ```
 
 For more information, see the documentation for the
 [Timber.Phoenix](https://hexdocs.pm/timber-phoenix/Timber.Phoenix.html) module.
