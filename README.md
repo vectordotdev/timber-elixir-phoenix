@@ -36,7 +36,7 @@ the configuration in `config/config.exs` would look like this:
     ```
 
 For more information, see the documentation for the
-[Timber.Phoenix](https://hexdocs.pm/timber-phoenix/Timber.Phoenix.html) module.
+[Timber.Phoenix](https://hexdocs.pm/timber_phoenix/Timber.Phoenix.html) module.
 
 ### Notes for Umbrella Applications
 
